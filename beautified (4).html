@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Robust CSP (adjust as needed, but be careful!) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src * data:; connect-src 'self' ws: wss:; frame-src *; font-src 'self' https://fonts.gstatic.com;">
+  <title>Advanced Browser</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    /* style.css - Advanced and Polished */
+    /* Reset and Basic Styles */
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #333;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    body.light-mode {
+      background-color: #fff;
+      color: #333;
+    }
+
+    /* Main Container */
+    #main-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* URL Bar */
+    #url-bar {
+      padding: 8px 12px;
+      background-color: #282c34;
+      border-bottom: 1px solid #444;
+      display: flex;
+      align-items: center;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #url-bar.light-mode {
+      background-color: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #controls {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    #url-bar button {
+      background: none;
+      border: none;
+      color: #eee;
+      cursor: pointer;
+      padding: 6px 12px;
+      font-size: 20px;
+      margin-right: 4px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    #url-bar.light-mode button {
+      color: #333;
+    }
+
+    #url-bar button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #url-bar.light-mode button:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    #url-bar button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #url {
+      flex-grow: 1;
+      padding: 10px 12px;
+      border: 1px solid #444;
+      border-radius: 20px;
+      margin-right: 8px;
+      background-color: #3a3f4b;
+      color: #fff;
+      font-size: 16px;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    #url:focus {
+      background-color: #fff;
+      color: #000;
+      border-color: #61afef;
+      outline: none;
+    }
+
+    #controls.search-mode #url {
+      background-color: #fff;
+      color: #000;
+      border-color: #61afef;
+    }
+
+    #url.light-mode {
+      background-color: #fff;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+
+    #url.light-mode:focus {
+      background-color: #fff;
+      color: #000;
+      border-color: #61afef;
+    }
+
+    #controls.search-mode #url.light-mode {
+      background-color: #fff;
+      color: #000;
+      border-color: #61afef;
+    }
+
+    /* Tabs */
+    #tabs {
+      display: flex;
+      overflow-x: auto;
+      background-color: #1e2127;
+      border-bottom: 1px solid #333;
+      user-select: none;
+      padding-left: 4px;
+    }
+
+    #tabs.light-mode {
+      background-color: #eee;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 10px 16px;
+      background-color: #282c34;
+      color: #eee;
+      border-right: 1px solid #3a3f4b;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+      max-width: 200px;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s ease;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .tab.active {
+      background-color: #3a3f4b;
+      color: #fff;
+      border-bottom: 2px solid #61afef;
+    }
+
+    .tab.active.light-mode {
+      background-color: #ddd;
+      color: #333;
+      border-bottom: 2px solid #61afef;
+    }
+
+    .tab.pinned {
+      background-color: #38414e;
+      min-width: auto;
+      padding: 10px 12px;
+      border-right: 1px solid #48525f;
+    }
+
+    .tab.pinned.light-mode {
+      background-color: #cce;
+      border-right: 1px solid #bbd;
+    }
+
+    .tab .close-tab {
+      margin-left: 8px;
+      cursor: pointer;
+      display: inline-block;
+      border-radius: 50%;
+      padding: 2px;
+      transition: background-color 0.2s ease;
+      line-height: 1;
+    }
+
+    .tab.pinned .close-tab {
+      display: none;
+    }
+
+    .tab .close-tab:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .tab.light-mode .close-tab:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .tab .pin-icon {
+      margin-right: 6px;
+      pointer-events: none;
+      color: #aaa;
+    }
+
+    .tab:hover {
+      background-color: #3a3f4b;
+    }
+
+    .tab.light-mode {
+      background-color: #eee;
+      color: #333;
+      border-right: 1px solid #ddd;
+    }
+
+    .tab.light-mode:hover {
+      background-color: #ddd;
+    }
+
+    /* iframe Container */
+    .iframe-container {
+      display: none;
+      height: calc(100% - 48px - 1px);
+      width: 100%;
+      position: relative;
+    }
+
+    .iframe-container.active {
+      display: block;
+    }
+
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Dropdown Content */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #282c34;
+      min-width: 180px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      color: #eee;
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 4px;
+    }
+
+    .dropdown-content.light-mode {
+      background-color: #f9f9f9;
+      color: #333;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-content.active {
+      display: block;
+    }
+
+    .dropdown-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .dropdown-content li {
+      padding: 14px 18px;
+      text-decoration: none;
+      display: block;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .dropdown-content li:hover {
+      background-color: #3a3f4b;
+    }
+
+    .dropdown-content.light-mode li:hover {
+      background-color: #ddd;
+    }
+
+    .dropdown-content a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #clearHistory {
+      width: 100%;
+      padding: 14px 18px;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      background-color: #c23616;
+      color: #fff;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+      border-radius: 0 0 4px 4px;
+    }
+
+    #clearHistory.light-mode {
+      background-color: #f0f0f0;
+      color: black;
+    }
+
+    #clearHistory:hover {
+      background-color: #e74c3c;
+    }
+
+    #clearHistory:hover.light-mode {
+      background-color: #ddd;
+    }
+
+    /* Settings Menu */
+    #settingsMenu {
+      right: 0;
+      padding: 12px;
+    }
+
+    #settingsMenu label {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    #settingsMenu select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #444;
+      background-color: #3a3f4b;
+      color: #eee;
+      border-radius: 4px;
+      font-size: 14px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    #settingsMenu.light-mode select {
+      border-color: #ccc;
+      background-color: #fff;
+      color: #333;
+    }
+
+    /* URL Suggestions */
+    #url-suggestions {
+      position: absolute;
+      left: 0;
+      right: 0;
+      background-color: #282c34;
+      border: 1px solid #444;
+      border-top: none;
+      z-index: 5;
+      max-height: 250px;
+      overflow-y: auto;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: none;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #url-suggestions.light-mode {
+      background-color: #f9f9f9;
+      border-color: #ccc;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #url-suggestions li {
+      padding: 12px 16px;
+      cursor: pointer;
+      color: #eee;
+      transition: background-color 0.2s ease;
+    }
+
+    #url-suggestions li:hover {
+      background-color: #3a3f4b;
+    }
+
+    #url-suggestions.light-mode li {
+      color: #333;
+    }
+
+    #url-suggestions.light-mode li:hover {
+      background-color: #ddd;
+    }
+
+    /* Tab Context Menu */
+    .tab-context-menu {
+      position: absolute;
+      background-color: #282c34;
+      color: #eee;
+      border: 1px solid #444;
+      padding: 6px 0;
+      z-index: 20;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+      border-radius: 4px;
+      min-width: 150px;
+    }
+
+    .tab-context-menu div {
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .tab-context-menu div:hover {
+      background-color: #3a3f4b;
+    }
+
+    /* Find in Page */
+    #findInPageContainer {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      padding: 0 6px;
+      border-radius: 20px;
+      background-color: #3a3f4b;
+      margin-right: 5px;
+    }
+
+    #findInPageInput {
+      padding: 6px 8px;
+      border: none;
+      border-radius: 16px;
+      margin-right: 4px;
+      background-color: transparent;
+      color: #fff;
+      width: 160px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #findInPageInput.light-mode {
+      background-color: transparent;
+      color: #333;
+      border: none;
+    }
+
+    #findInPageContainer.light-mode {
+      background-color: #f0f0f0;
+    }
+
+    #findInPageContainer button {
+      margin: 0 2px;
+    }
+
+    .find-in-page-highlight {
+      background-color: #61afef;
+      color: #282c34;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+
+    /* Loading Indicator */
+    #loadingIndicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #61afef;
+      font-size: 32px;
+      animation: rotate 1.5s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#444">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon.png">
+</head>
+
+<body>
+  <div id="main-container">
+    <div id="url-bar">
+      <div id="controls">
+        <button id="back" disabled><span class="material-icons">arrow_back</span></button>
+        <button id="forward" disabled><span class="material-icons">arrow_forward</span></button>
+        <button id="reloadBtn"><span class="material-icons">refresh</span></button>
+        <button id="historyButton"><span class="material-icons">history</span></button>
+        <input type="text" id="url" placeholder="Enter URL or search term">
+        <button id="searchIcon"><span class="material-icons">search</span></button>
+        <button id="bookmarkBtn"><span class="material-icons">star_border</span></button>
+        <button id="bookmarksButton"><span class="material-icons">bookmarks</span></button>
+        <button id="themeToggle"><span class="material-icons">brightness_4</span></button>
+        <button id="settingsButton"><span class="material-icons">settings</span></button>
+        <!-- Find in Page Container -->
+        <div id="findInPageContainer" style="display: none;">
+          <input type="text" id="findInPageInput" placeholder="Find in page">
+          <button id="findInPagePrev"><span class="material-icons">arrow_upward</span></button>
+          <button id="findInPageNext"><span class="material-icons">arrow_downward</span></button>
+          <button id="findInPageClose"><span class="material-icons">close</span></button>
+        </div>
+        <!-- Loading Indicator (initially hidden) -->
+        <div id="loadingIndicator" style="display: none;">
+          <span class="material-icons">autorenew</span>
+        </div>
+      </div>
+    </div>
+    <div id="tabs"></div>
+    <div id="browsers"></div>
+  </div>
+  <div id="historyDropdown" class="dropdown-content">
+    <ul id="historyList"></ul>
+    <button id="clearHistory">Clear History</button>
+  </div>
+  <div id="bookmarksDropdown" class="dropdown-content">
+    <ul id="bookmarksList"></ul>
+  </div>
+  <div id="settingsMenu" class="dropdown-content">
+    <label for="searchEngineSelect">Search Engine:</label>
+    <select id="searchEngineSelect">
+      <option value="brave">Brave</option>
+      <option value="google">Google</option>
+      <option value="yandex">Yandex</option>
+      <option value="duckduckgo">DuckDuckgo</option>
+    </select>
+    <label for="proxyTypeSelect">Proxy Type:</label>
+    <select id="proxyTypeSelect">
+      <option value="none">None</option>
+      <option value="http">HTTP</option>
+      <option value="https">HTTPS</option>
+      <option value="socks4">SOCKS4</option>
+      <option value="socks5">SOCKS5</option>
+    </select>
+  </div>
+  <ul id="url-suggestions"></ul>
+  <script>
+    const DOMPurify = window.DOMPurify;
+
+    // --- Constants ---
+
+    const MAX_TABS = 20;
+
+    const MAX_HISTORY_ENTRIES = 100;
+
+    const DEFAULT_SEARCH_ENGINE = 'brave';
+
+    const DEFAULT_LANGUAGE = 'en';
+
+    const URL_REGEX = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+
+    const WEB_SOCKET_PROXY_URL = 'ws://localhost:8080'; //  YOUR WebSocket proxy URL
+
+    const DEBOUNCE_DELAY = 300;
+
+    // --- DOM Element References ---
+
+    const dom = {
+
+      searchInput: document.getElementById('url'),
+
+      historyList: document.getElementById('historyList'),
+
+      themeToggle: document.getElementById('themeToggle'),
+
+      historyButton: document.getElementById('historyButton'),
+
+      historyDropdown: document.getElementById('historyDropdown'),
+
+      clearHistoryBtn: document.getElementById('clearHistory'),
+
+      settingsButton: document.getElementById('settingsButton'),
+
+      settingsMenu: document.getElementById('settingsMenu'),
+
+      searchEngineSelect: document.getElementById('searchEngineSelect'),
+
+      proxyTypeSelect: document.getElementById('proxyTypeSelect'), // Proxy Type Select
+
+      searchIcon: document.getElementById('searchIcon'),
+
+      suggestionList: document.getElementById('url-suggestions'),
+
+      reloadBtn: document.getElementById('reloadBtn'),
+
+      bookmarkBtn: document.getElementById('bookmarkBtn'),
+
+      tabsContainer: document.getElementById("tabs"),
+
+      browsers: document.getElementById("browsers"),
+
+      back: document.getElementById('back'),
+
+      forward: document.getElementById('forward'),
+
+      controls: document.getElementById('controls'),
+
+      bookmarksDropdown: document.getElementById('bookmarksDropdown'),
+
+      bookmarksList: document.getElementById('bookmarksList'),
+
+      findInPageInput: document.getElementById('findInPageInput'),
+
+      findInPageContainer: document.getElementById('findInPageContainer'),
+
+      loadingIndicator: document.getElementById('loadingIndicator'),
+
+    };
+
+    // --- Data Structures ---
+
+    class Tab {
+
+      constructor(id, iframe, button, history = [], historyIndex = -1, isPinned = false, groupId = null, ws = null) {
+
+        this.id = id;
+
+        this.iframe = iframe;
+
+        this.button = button;
+
+        this.history = history;
+
+        this.historyIndex = historyIndex;
+
+        this.isPinned = isPinned;
+
+        this.groupId = groupId;
+
+        this.ws = ws; // WebSocket connection for this tab
+
+      }
+
+    }
+
+    let tabs = new Map();
+
+    let bookmarks = new Map();
+
+    let activeTabId = null;
+
+    let tabGroups = new Map();
+
+    // --- Utility Functions ---
+
+    function isValidUrl(urlString) {
+
+      try {
+
+        const url = new URL(urlString);
+
+        return (url.protocol === 'http:' || url.protocol === 'https:') && URL_REGEX.test(urlString);
+
+      } catch (_) {
+
+        return false;
+
+      }
+
+    }
+
+    // Debounce function for input handling
+
+    function debounce(func, delay) {
+
+      let timeoutId;
+
+      return function (...args) {
+
+        clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(() => {
+
+          func.apply(this, args);
+
+        }, delay);
+
+      };
+
+    }
+
+    // --- Find in Page ---
+
+    let currentSearchTerm = '';
+
+    let searchResults = [];
+
+    let currentResultIndex = -1;
+
+    function findInPage(searchTerm) {
+
+      if(!activeTabId) return;
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab) return;
+
+      searchResults = [];
+
+      currentResultIndex = -1;
+
+      if(!searchTerm) {
+
+        clearFindInPageHighlights(currentTab.iframe);
+
+        return;
+
+      }
+
+      currentSearchTerm = searchTerm;
+
+      try {
+
+        const iframeWindow = currentTab.iframe.contentWindow;
+
+        const iframeDocument = currentTab.iframe.contentDocument;
+
+        function searchNode(node) {
+
+          if(node.nodeType === Node.TEXT_NODE) {
+
+            const text = node.textContent.toLowerCase();
+
+            let index = text.indexOf(searchTerm.toLowerCase());
+
+            while(index !== -1) {
+
+              searchResults.push({
+                node,
+                index
+              });
+
+              index = text.indexOf(searchTerm.toLowerCase(), index + 1);
+
+            }
+
+          } else if(node.nodeType === Node.ELEMENT_NODE && node.nodeName.toLowerCase() !== 'script' && node.nodeName.toLowerCase() !== 'style') {
+
+            for(const child of node.childNodes) {
+
+              searchNode(child);
+
+            }
+
+          }
+
+        }
+
+        searchNode(iframeDocument.body);
+
+        highlightSearchResults(currentTab.iframe);
+
+        if(searchResults.length > 0) {
+
+          scrollToNextResult();
+
+        }
+
+      } catch (e) {
+
+        console.error("Error during find in page:", e);
+
+      }
+
+    }
+
+    function highlightSearchResults(iframe) {
+
+      if(!iframe || !iframe.contentDocument) return;
+
+      const iframeDocument = iframe.contentDocument;
+
+      clearFindInPageHighlights(iframe);
+
+      searchResults.forEach(({
+        node,
+        index
+      }) => {
+
+        const range = iframeDocument.createRange();
+
+        range.setStart(node, index);
+
+        range.setEnd(node, index + currentSearchTerm.length);
+
+        const span = iframeDocument.createElement('span');
+
+        span.className = 'find-in-page-highlight';
+
+        span.style.backgroundColor = 'yellow';
+
+        span.style.color = 'black';
+
+        range.surroundContents(span);
+
+      });
+
+    }
+
+    function clearFindInPageHighlights(iframe) {
+
+      if(!iframe || !iframe.contentDocument) return;
+
+      const iframeDocument = iframe.contentDocument;
+
+      const highlights = iframeDocument.querySelectorAll('.find-in-page-highlight')
+
+      highlights.forEach(highlight => {
+
+        const parent = highlight.parentNode;
+
+        while(highlight.firstChild) {
+
+          parent.insertBefore(highlight.firstChild, highlight);
+
+        }
+
+        parent.removeChild(highlight);
+
+      })
+
+      iframeDocument.body.normalize();
+
+    }
+
+    function scrollToNextResult() {
+
+      if(searchResults.length === 0) return;
+
+      const currentTab = tabs.get(activeTabId)
+
+      if(!currentTab) return;
+
+      currentResultIndex = (currentResultIndex + 1) % searchResults.length;
+
+      const {
+        node
+      } = searchResults[currentResultIndex];
+
+      try {
+
+        const iframeWindow = currentTab.iframe.contentWindow;
+
+        if(node && node.parentElement) {
+
+          node.parentElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+
+          clearFindInPageHighlights(currentTab.iframe)
+
+          highlightSearchResults(currentTab.iframe)
+
+        }
+
+      } catch (e) {
+
+        console.error("Error during find in page:", e);
+
+      }
+
+    }
+
+    function scrollToPreviousResult() {
+
+      if(searchResults.length === 0) return;
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab) return;
+
+      currentResultIndex = (currentResultIndex - 1 + searchResults.length) % searchResults.length;
+
+      const {
+        node
+      } = searchResults[currentResultIndex];
+
+      try {
+
+        const iframeWindow = currentTab.iframe.contentWindow;
+
+        if(node && node.parentElement) {
+
+          node.parentElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+
+          clearFindInPageHighlights(currentTab.iframe);
+
+          highlightSearchResults(currentTab.iframe);
+
+        }
+
+      } catch (e) {
+
+        console.error("Error during find in page:", e);
+
+      }
+
+    }
+
+    // --- Page Loading ---
+
+    function loadPage(inputUrl = dom.searchInput.value) {
+
+      if(!inputUrl) return;
+
+      let url = inputUrl;
+
+      if(!activeTabId) {
+
+        newTab(url);
+
+        return;
+
+      }
+
+      if(!url.startsWith('http') && !url.startsWith('https')) {
+
+        url = 'https://' + url;
+
+      }
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab) return;
+
+      if(!isValidUrl(url)) {
+
+        const searchEngine = localStorage.getItem('searchEngine') || DEFAULT_SEARCH_ENGINE;
+
+        url = searchEngines[searchEngine] + encodeURIComponent(inputUrl);
+
+      }
+
+      // Get proxy settings from localStorage
+
+      const proxyType = localStorage.getItem('proxyType') || 'none'; // Default to 'none'
+
+      const requestData = {
+
+        url: url,
+
+        proxyType: proxyType,
+
+        //Removed proxyHost, proxyPort, username, password
+
+      };
+
+      // Add to history *before* loading
+
+      addToHistory(activeTabId, url);
+
+      dom.loadingIndicator.style.display = 'block';
+
+      // Send request to YOUR WebSocket proxy server
+
+      try {
+
+        // Establish WebSocket connection (one per tab)
+
+        if(!currentTab.ws || currentTab.ws.readyState !== WebSocket.OPEN) {
+
+          currentTab.ws = new WebSocket(WEB_SOCKET_PROXY_URL); // Use wss:// for HTTPS.
+
+          currentTab.ws.onopen = () => {
+
+            currentTab.ws.send(JSON.stringify(requestData));
+
+          };
+
+        } else {
+
+          currentTab.ws.send(JSON.stringify(requestData)); // Send if already open
+
+        }
+
+        currentTab.ws.onmessage = event => {
+
+          const response = JSON.parse(event.data);
+
+          if(response.error) {
+
+            handleIframeError(currentTab.iframe);
+
+            console.error("Proxy error:", response.error);
+
+            return;
+
+          }
+
+          if(response.statusCode) {
+
+            console.log("Received headers:", response.headers)
+
+          }
+
+          if(response.data) {
+
+            try {
+
+              const decodedData = atob(response.data); // Decode base64 data
+
+              const blob = new Blob([decodedData], {
+                type: 'text/html'
+              });
+
+              const blobUrl = URL.createObjectURL(blob);
+
+              currentTab.iframe.src = blobUrl;
+
+            } catch (decodeError) {
+
+              console.error("Error decoding response data", decodeError);
+
+              handleIframeError(currentTab.iframe);
+
+            }
+
+          }
+
+          if(response.end) {
+
+            dom.loadingIndicator.style.display = 'none';
+
+          }
+
+        };
+
+        currentTab.ws.onerror = error => {
+
+          console.error("WebSocket error:", error);
+
+          handleIframeError(currentTab.iframe);
+
+          dom.loadingIndicator.style.display = 'none';
+
+        };
+
+      } catch (error) {
+
+        console.error("Error sending request to proxy:", error);
+
+        handleIframeError(currentTab.iframe);
+
+        dom.loadingIndicator.style.display = 'none';
+
+      }
+
+      deactivateSearchMode();
+
+      dom.searchInput.value = url;
+
+    }
+
+    // --- Tab Management ---
+
+    function newTab(url = "about:blank", restoredHistory = null, restoredHistoryIndex = null, isPinned = false, groupId = null) {
+
+      if(tabs.size >= MAX_TABS) {
+
+        alert("Maximum number of tabs reached!");
+
+        return;
+
+      }
+
+      const tabId = `tab${Date.now()}`;
+
+      const tabButton = createTabButton(tabId, url, isPinned);
+
+      const iframeContainer = createIframeContainer(tabId, url);
+
+      const iframe = iframeContainer.querySelector("iframe");
+
+      // Create a new Tab object, including the WebSocket (initially null)
+
+      const newTab = new Tab(tabId, iframe, tabButton, restoredHistory || [], (restoredHistory && restoredHistoryIndex !== null) ? restoredHistoryIndex : -1, isPinned, groupId, null);
+
+      tabs.set(tabId, newTab);
+
+      if(isPinned) {
+
+        dom.tabsContainer.insertBefore(tabButton, dom.tabsContainer.firstChild);
+
+      } else {
+
+        dom.tabsContainer.appendChild(tabButton);
+
+      }
+
+      dom.browsers.appendChild(iframeContainer);
+
+      switchTab(tabId);
+
+      dom.searchInput.value = '';
+
+      if(url === "about:blank") {
+
+        tabButton.textContent = "New Tab";
+
+      }
+
+      deactivateSearchMode();
+
+      updateBookmarksUI();
+
+      return tabId;
+
+    }
+
+    function createTabButton(tabId, initialUrl, isPinned) {
+
+      const tabButton = document.createElement("div");
+
+      tabButton.className = `tab ${isPinned ? 'pinned' : ''}`;
+
+      tabButton.textContent = initialUrl === "about:blank" ? "New Tab" : "Loading...";
+
+      tabButton.setAttribute("data-tab", tabId);
+
+      const pinIcon = document.createElement('span');
+
+      pinIcon.className = 'pin-icon material-icons';
+
+      pinIcon.textContent = 'push_pin'
+
+      pinIcon.style.display = isPinned ? 'inline-block' : 'none';
+
+      tabButton.prepend(pinIcon);
+
+      const closeButton = document.createElement("span");
+
+      closeButton.className = "close-tab";
+
+      closeButton.textContent = "×";
+
+      closeButton.onclick = (event) => {
+
+        event.stopPropagation();
+
+        closeTab(tabId);
+
+      };
+
+      if(!isPinned) {
+
+        tabButton.appendChild(closeButton);
+
+      }
+
+      tabButton.onclick = () => switchTab(tabId);
+
+      tabButton.oncontextmenu = (event) => {
+
+        event.preventDefault();
+
+        const menu = document.createElement('div');
+
+        menu.className = 'tab-context-menu';
+
+        const pinOption = document.createElement('div');
+
+        pinOption.textContent = isPinned ? "Unpin Tab" : "Pin Tab";
+
+        pinOption.onclick = () => {
+
+          toggleTabPin(tabId);
+
+          menu.remove();
+
+        };
+
+        menu.appendChild(pinOption)
+
+        const closeOption = document.createElement('div');
+
+        closeOption.textContent = "Close Tab";
+
+        closeOption.onclick = () => {
+
+          closeTab(tabId);
+
+          menu.remove();
+
+        };
+
+        menu.appendChild(closeOption);
+
+        const rect = tabButton.getBoundingClientRect();
+
+        menu.style.top = `${rect.bottom}px`;
+
+        menu.style.left = `${rect.left}px`;
+
+        document.body.appendChild(menu);
+
+        const closeMenu = (e) => {
+
+          if(!menu.contains(e.target)) {
+
+            menu.remove();
+
+            document.removeEventListener('click', closeMenu);
+
+          }
+
+        };
+
+        setTimeout(() => {
+
+          document.addEventListener('click', closeMenu);
+
+        }, 0);
+
+      };
+
+      return tabButton;
+
+    }
+
+    function toggleTabPin(tabId) {
+
+      const tab = tabs.get(tabId);
+
+      if(!tab) return;
+
+      tab.isPinned = !tab.isPinned;
+
+      tab.button.classList.toggle('pinned', tab.isPinned);
+
+      if(tab.isPinned) {
+
+        dom.tabsContainer.insertBefore(tab.button, dom.tabsContainer.firstChild);
+
+        //Remove close button and add pin icon
+
+        const closeBtn = tab.button.querySelector('.close-tab');
+
+        if(closeBtn) closeBtn.remove();
+
+        const pinIcon = tab.button.querySelector('.pin-icon');
+
+        if(pinIcon) pinIcon.style.display = 'inline-block';
+
+      } else {
+
+        dom.tabsContainer.appendChild(tab.button);
+
+        //Add close button and remove pin icon
+
+        const closeButton = document.createElement("span");
+
+        closeButton.className = "close-tab";
+
+        closeButton.textContent = "×";
+
+        closeButton.onclick = (event) => {
+
+          event.stopPropagation();
+
+          closeTab(tabId);
+
+        };
+
+        tab.button.appendChild(closeButton);
+
+        const pinIcon = tab.button.querySelector('.pin-icon');
+
+        if(pinIcon) pinIcon.style.display = 'none';
+
+      }
+
+      if(activeTabId === tabId) {
+
+        switchTab(tabId)
+
+      }
+
+    }
+
+    function createIframeContainer(tabId, url) {
+
+      const iframeContainer = document.createElement("div");
+
+      iframeContainer.className = "iframe-container";
+
+      iframeContainer.id = tabId;
+
+      const iframe = document.createElement("iframe");
+
+      iframe.sandbox = "allow-forms allow-scripts allow-same-origin allow-downloads allow-popups allow-modals allow-top-navigation-by-user-activation";
+
+      iframe.src = url; // Initial src (can be about:blank)
+
+      iframeContainer.appendChild(iframe);
+
+      iframe.onload = () => handleIframeLoad(iframe, tabId);
+
+      iframe.onerror = () => handleIframeError(iframe);
+
+      return iframeContainer;
+
+    }
+
+    function handleIframeLoad(iframe, tabId) {
+
+      dom.loadingIndicator.style.display = 'none';
+
+      const tab = tabs.get(tabId);
+
+      if(!tab) return;
+
+      const tabButton = tab.button;
+
+      const closeButton = tabButton.querySelector('.close-tab');
+
+      try {
+
+        const pageTitle = iframe.contentDocument.title;
+
+        const currentUrl = iframe.contentWindow.location.href;
+
+        tabButton.innerHTML = DOMPurify.sanitize(pageTitle || currentUrl);
+
+        const pinIcon = tab.button.querySelector('.pin-icon');
+
+        if(pinIcon) tabButton.prepend(pinIcon);
+
+        if(closeButton && !tab.isPinned) tabButton.appendChild(closeButton);
+
+        if(tabId === activeTabId) {
+
+          dom.searchInput.value = currentUrl;
+
+          updateBookmarkIcon(currentUrl);
+
+        }
+
+      } catch (e) {
+
+        // Handle cross-origin access error (can't get title/url)
+
+        const currentUrl = iframe.src;
+
+        tabButton.textContent = currentUrl;
+
+        const pinIcon = tab.button.querySelector('.pin-icon');
+
+        if(pinIcon) tabButton.prepend(pinIcon);
+
+        if(closeButton && !tab.isPinned) tabButton.appendChild(closeButton);
+
+        if(tabId === activeTabId) {
+
+          dom.searchInput.value = currentUrl;
+
+          updateBookmarkIcon(currentUrl);
+
+        }
+
+      }
+
+    }
+
+    function handleIframeError(iframe) {
+
+      dom.loadingIndicator.style.display = 'none';
+
+      iframe.src = "about:blank"; // Set to about:blank on error
+
+      try {
+
+        iframe.contentDocument.body.innerHTML = `<div style="text-align: center; padding: 20px;">
+
+                                                <h2>Error</h2>
+
+                                                <p>The page could not be loaded.</p>
+
+                                                <a href="#" onclick="window.location.reload()">Try Again</a>
+
+                                                </div>`;
+
+      } catch (error) {
+
+        console.error("Error setting error page", error);
+
+      }
+
+    }
+
+    function closeTab(tabId) {
+
+      const tab = tabs.get(tabId);
+
+      if(!tab) return;
+
+      // Close the WebSocket connection for this tab
+
+      if(tab.ws && tab.ws.readyState === WebSocket.OPEN) {
+
+        tab.ws.close();
+
+      }
+
+      tab.button.remove();
+
+      tab.iframe.parentElement.remove();
+
+      tabs.delete(tabId);
+
+      if(tabId === activeTabId) {
+
+        const tabIds = Array.from(tabs.keys());
+
+        if(tabIds.length > 0) {
+
+          switchTab(tabIds[tabIds.length - 1]);
+
+        } else {
+
+          activeTabId = null;
+
+          dom.searchInput.value = '';
+
+          dom.back.disabled = true;
+
+          dom.forward.disabled = true;
+
+          dom.bookmarkBtn.innerHTML = '<span class="material-icons">star_border</span>';
+
+        }
+
+      }
+
+      if(activeTabId) {
+
+        updateNavigationButtons(activeTabId);
+
+      }
+
+    }
+
+    function switchTab(tabId) {
+
+      tabs.forEach((tab) => {
+
+        tab.button.classList.remove("active");
+
+        tab.iframe.parentElement.classList.remove("active");
+
+      });
+
+      const tab = tabs.get(tabId);
+
+      if(!tab) return;
+
+      tab.button.classList.add("active");
+
+      tab.iframe.parentElement.classList.add("active");
+
+      activeTabId = tabId;
+
+      try {
+
+        dom.searchInput.value = tab.iframe.contentWindow.location.href;
+
+        updateBookmarkIcon(tab.iframe.contentWindow.location.href);
+
+      } catch (error) {
+
+        dom.searchInput.value = tab.iframe.src
+
+        updateBookmarkIcon(tab.iframe.src)
+
+      }
+
+      updateNavigationButtons(tabId)
+
+      clearFindInPageHighlights(tab.iframe);
+
+    }
+
+    // --- Navigation ---
+
+    function addToHistory(tabId, url) {
+
+      const tab = tabs.get(tabId);
+
+      if(!tab || !url) return;
+
+      if(tab.historyIndex < tab.history.length - 1) {
+
+        tab.history = tab.history.slice(0, tab.historyIndex + 1);
+
+      }
+
+      if(tab.history.length > 0 && tab.history[tab.historyIndex] === url) {
+
+        return;
+
+      }
+
+      tab.history.push(url);
+
+      tab.historyIndex++;
+
+      if(tab.history.length > MAX_HISTORY_ENTRIES) {
+
+        tab.history.shift();
+
+        tab.historyIndex--;
+
+      }
+
+      updateNavigationButtons(tabId);
+
+      updateHistoryUI();
+
+    }
+
+    function goBack() {
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab || currentTab.historyIndex <= 0) return;
+
+      currentTab.historyIndex--;
+
+      const url = currentTab.history[currentTab.historyIndex];
+
+      loadHistoryEntry(url);
+
+    }
+
+    function goForward() {
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab || currentTab.historyIndex >= currentTab.history.length - 1) return;
+
+      currentTab.historyIndex++;
+
+      const url = currentTab.history[currentTab.historyIndex];
+
+      loadHistoryEntry(url);
+
+    }
+
+    function loadHistoryEntry(url) {
+
+      if(!activeTabId) return;
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab) return
+
+      dom.loadingIndicator.style.display = 'block';
+
+      // Use loadPage to handle proxying
+
+      loadPage(url);
+
+    }
+
+    function updateNavigationButtons(tabId) {
+
+      if(activeTabId !== tabId) return;
+
+      const tab = tabs.get(tabId);
+
+      if(!tab) {
+
+        dom.back.disabled = true;
+
+        dom.forward.disabled = true;
+
+        return;
+
+      }
+
+      dom.back.disabled = tab.historyIndex <= 0;
+
+      dom.forward.disabled = tab.historyIndex >= tab.history.length - 1;
+
+    }
+
+    // --- Bookmarks ---
+
+    function toggleBookmark(url) {
+
+      if(!url) return;
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab) return;
+
+      let title;
+
+      try {
+
+        title = currentTab.iframe.contentDocument.title;
+
+      } catch (error) {
+
+        title = url;
+
+      }
+
+      if(bookmarks.has(url)) {
+
+        bookmarks.delete(url);
+
+        dom.bookmarkBtn.innerHTML = '<span class="material-icons">star_border</span>';
+
+      } else {
+
+        bookmarks.set(url, {
+          title: DOMPurify.sanitize(title),
+          addedDate: new Date()
+        });
+
+        dom.bookmarkBtn.innerHTML = '<span class="material-icons">star</span>';
+
+      }
+
+      localStorage.setItem('bookmarks', JSON.stringify(Array.from(bookmarks.entries())));
+
+      updateBookmarksUI();
+
+    }
+
+    function updateBookmarkIcon(currentUrl) {
+
+      dom.bookmarkBtn.innerHTML = bookmarks.has(currentUrl) ? '<span class="material-icons">star</span>' : '<span class="material-icons">star_border</span>';
+
+    }
+
+    function updateBookmarksUI() {
+
+      dom.bookmarksList.innerHTML = '';
+
+      const sortedBookmarks = Array.from(bookmarks.entries()).sort(([, a], [, b]) => b.addedDate - a.addedDate);
+
+      sortedBookmarks.forEach(([url, {
+        title
+      }]) => {
+
+        const li = document.createElement('li');
+
+        const link = document.createElement('a');
+
+        link.href = "#";
+
+        link.textContent = title;
+
+        link.onclick = () => {
+
+          loadPage(url);
+
+          closeBookmarksDropdown();
+
+        };
+
+        li.appendChild(link);
+
+        dom.bookmarksList.appendChild(li);
+
+      });
+
+      if(bookmarks.size === 0) {
+
+        const emptyLi = document.createElement('li');
+
+        emptyLi.textContent = "No bookmarks yet.";
+
+        dom.bookmarksList.appendChild(emptyLi);
+
+      }
+
+    }
+
+    // --- History Dropdown ---
+
+    function clearHistory() {
+
+      tabs.forEach(tab => {
+
+        tab.history = [];
+
+        tab.historyIndex = -1;
+
+      });
+
+      updateHistoryUI();
+
+      closeHistoryDropdown();
+
+      if(activeTabId) {
+
+        updateNavigationButtons(activeTabId)
+
+      }
+
+    }
+
+    function updateHistoryUI() {
+
+      dom.historyList.innerHTML = "";
+
+      let allHistory = [];
+
+      tabs.forEach(tab => {
+
+        allHistory = allHistory.concat(tab.history);
+
+      });
+
+      const uniqueHistory = [...new Set(allHistory)]
+
+      uniqueHistory.forEach(url => {
+
+        const li = document.createElement('li');
+
+        li.textContent = url;
+
+        li.onclick = () => {
+
+          loadPage(url);
+
+          closeHistoryDropdown();
+
+        };
+
+        dom.historyList.appendChild(li);
+
+      });
+
+      if(dom.historyList.children.length === 0) {
+
+        const empty = document.createElement('li');
+
+        empty.textContent = "No history yet";
+
+        dom.historyList.appendChild(empty)
+
+      }
+
+    }
+
+    function openHistoryDropdown() {
+
+      updateHistoryUI();
+
+      dom.historyDropdown.classList.add('active');
+
+    }
+
+    function closeHistoryDropdown() {
+
+      dom.historyDropdown.classList.remove('active');
+
+    }
+
+    // --- Settings Menu ---
+
+    function loadSettings() {
+
+      const savedEngine = localStorage.getItem('searchEngine') || DEFAULT_SEARCH_ENGINE;
+
+      dom.searchEngineSelect.value = savedEngine;
+
+      const savedTheme = localStorage.getItem('theme');
+
+      document.body.classList.toggle('light-mode', savedTheme === 'light');
+
+      dom.themeToggle.textContent = savedTheme === 'light' ? 'brightness_2' : 'brightness_4';
+
+      // Load proxy type
+
+      const savedProxyType = localStorage.getItem('proxyType') || 'none';
+
+      dom.proxyTypeSelect.value = savedProxyType;
+
+    }
+
+    // --- Reload Tab ---
+
+    function reloadCurrentTab() {
+
+      if(!activeTabId) return;
+
+      const currentTab = tabs.get(activeTabId);
+
+      // Instead of reloading the iframe directly, send a request through loadPage
+
+      // This ensures that proxy settings are respected.
+
+      try {
+
+        loadPage(currentTab.iframe.contentWindow.location.href);
+
+      } catch (e) {
+
+        loadPage(currentTab.iframe.src)
+
+      }
+
+    }
+
+    // --- Search Mode Functions ---
+
+    function activateSearchMode() {
+
+      dom.controls.classList.add('search-mode');
+
+      dom.suggestionList.style.display = 'block';
+
+    }
+
+    function deactivateSearchMode() {
+
+      dom.controls.classList.remove('search-mode');
+
+      dom.suggestionList.style.display = 'none';
+
+    }
+
+    // --- Theme Switching ---
+
+    function toggleTheme() {
+
+      const isLightMode = document.body.classList.toggle('light-mode');
+
+      dom.themeToggle.textContent = isLightMode ? 'brightness_2' : 'brightness_4';
+
+      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+
+    }
+
+    // --- Event Listeners ---
+
+    // Search Input (with debouncing)
+
+    const debouncedLoadPage = debounce(loadPage, DEBOUNCE_DELAY);
+
+    dom.searchInput.addEventListener('keydown', (e) => {
+
+      if(e.key === 'Enter') {
+
+        debouncedLoadPage();
+
+      }
+
+    });
+
+    dom.themeToggle.addEventListener('click', toggleTheme);
+
+    dom.searchEngineSelect.addEventListener('change', (e) => {
+
+      localStorage.setItem('searchEngine', e.target.value);
+
+    });
+
+    // Proxy Type Change
+
+    dom.proxyTypeSelect.addEventListener('change', (e) => {
+
+      localStorage.setItem('proxyType', e.target.value);
+
+    });
+
+    dom.historyButton.addEventListener('click', (e) => {
+
+      openHistoryDropdown();
+
+      e.stopPropagation();
+
+    });
+
+    dom.clearHistoryBtn.addEventListener('click', (e) => {
+
+      clearHistory();
+
+      e.stopPropagation();
+
+    });
+
+    dom.settingsButton.addEventListener('click', () => {
+
+      dom.settingsMenu.classList.toggle('active');
+
+    });
+
+    document.addEventListener('click', (e) => {
+
+      if(!dom.settingsMenu.contains(e.target) && !dom.settingsButton.contains(e.target)) {
+
+        dom.settingsMenu.classList.remove('active');
+
+      }
+
+    });
+
+    dom.reloadBtn.addEventListener('click', reloadCurrentTab);
+
+    dom.back.addEventListener('click', goBack);
+
+    dom.forward.addEventListener('click', goForward);
+
+    dom.bookmarkBtn.addEventListener('click', () => {
+
+      if(!activeTabId) return;
+
+      const currentTab = tabs.get(activeTabId);
+
+      if(!currentTab) return;
+
+      let currentUrl;
+
+      try {
+
+        currentUrl = currentTab.iframe.contentWindow.location.href;
+
+      } catch (error) {
+
+        currentUrl = currentTab.iframe.src
+
+      }
+
+      toggleBookmark(currentUrl);
+
+    });
+
+    dom.bookmarksButton.addEventListener('click', (e) => {
+
+      updateBookmarksUI();
+
+      dom.bookmarksDropdown.classList.add('active');
+
+      e.stopPropagation();
+
+    });
+
+    function closeBookmarksDropdown() {
+
+      dom.bookmarksDropdown.classList.remove('active');
+
+    }
+
+    dom.findInPageInput.addEventListener('input', (e) => {
+
+      const searchTerm = e.target.value;
+
+      findInPage(searchTerm);
+
+    })
+
+    dom.findInPagePrev.addEventListener('click', () => {
+
+      scrollToPreviousResult();
+
+    });
+
+    dom.findInPageNext.addEventListener('click', () => {
+
+      scrollToNextResult();
+
+    });
+
+    dom.findInPageClose.addEventListener('click', () => {
+
+      dom.findInPageContainer.style.display = 'none';
+
+      if(activeTabId) {
+
+        const currentTab = tabs.get(activeTabId);
+
+        if(currentTab) {
+
+          clearFindInPageHighlights(currentTab.iframe);
+
+        }
+
+      }
+
+      currentSearchTerm = '';
+
+      searchResults = [];
+
+      currentResultIndex = -1;
+
+    });
+
+    document.addEventListener('click', (e) => {
+
+      if(!dom.historyDropdown.contains(e.target) && !dom.historyButton.contains(e.target)) {
+
+        closeHistoryDropdown();
+
+      }
+
+      if(!dom.settingsMenu.contains(e.target) && !dom.settingsButton.contains(e.target)) {
+
+        dom.settingsMenu.classList.remove('active');
+
+      }
+
+      if(!dom.bookmarksDropdown.contains(e.target) && !dom.bookmarksButton.contains(e.target)) {
+
+        closeBookmarksDropdown();
+
+      }
+
+      if(!dom.controls.contains(e.target)) {
+
+        deactivateSearchMode();
+
+      }
+
+      if(!dom.suggestionList.contains(e.target)) {
+
+        dom.suggestionList.style.display = 'none';
+
+      }
+
+    });
+
+    // Search Engines
+
+    const searchEngines = {
+
+      brave: "https://search.brave.com/search?q=",
+
+      google: "https://www.google.com/search?q=",
+
+      yandex: "https://yandex.com/search/?text=",
+
+      duckduckgo: "https://duckduckgo.com/?q="
+
+    };
+
+    // --- Initialization ---
+
+    function initialize() {
+
+      loadSettings();
+
+      try {
+
+        const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+
+        if(Array.isArray(storedBookmarks)) {
+
+          storedBookmarks.forEach(([url, data]) => {
+
+            if(typeof data === 'object' && data !== null && typeof data.title === 'string') {
+
+              bookmarks.set(url, {
+                title: DOMPurify.sanitize(data.title),
+                addedDate: new Date(data.addedDate || Date.now())
+              });
+
+            }
+
+          });
+
+        }
+
+      } catch (error) {
+
+        console.error("Error loading bookmarks:", error);
+
+        localStorage.removeItem('bookmarks');
+
+        bookmarks.clear();
+
+      }
+
+      newTab();
+
+      updateBookmarksUI();
+
+      updateHistoryUI();
+
+    }
+
+    initialize();
+  </script>
+</body>
+
+</html>
